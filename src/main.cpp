@@ -12,25 +12,29 @@ int main(int argc, char **argv)
     std::cin >> n;
     assert(std::cin.good());
 
-    for(int i = 0; i < n; i++)
-        {
-            float x, y, z;
+    std::vector<point_t> points;
+    std::vector<triangle_t> triangles;
 
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < 3; j++) {
+            float x = NAN, y = NAN, z = NAN;
             std::cin >> x >> y >> z;
             assert(std::cin.good());
-            point_t A1{x, y, z};
-            A1.print();
-            point_t A2{x+1, y-2, z};
 
-            if(A2 == A1) {
-                return  0;
-            }
-
-            line_t LL{A1, A2};
-            LL.print();
-
-
+            points.push_back(point_t(x, y, z));
         }
+
+        triangles.push_back(triangle_t(points[0], points[1], points[2]));
+        points.clear();
+
+    }
+
+    for(int i = 0; i < n - 1; i++) {
+        for(int j = i + 1; j < n; j++){
+            if(intersect(triangles[i], triangles[j]))
+                std::cout << i << ' ' << j << std::endl;
+        }
+    }
 
     return 0;
 }

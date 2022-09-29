@@ -7,6 +7,10 @@
 #define fit_tolerance 1e-5
 
 namespace geometry {
+
+    class triangle_t;
+    class plane_t;
+
     class point_t {
         float x_ = NAN, y_ = NAN, z_ = NAN;
 
@@ -48,6 +52,7 @@ namespace geometry {
     public:
         line_t(const point_t &p1, const point_t &p2);
         line_t(const point_t &p, const vector_t &v);
+        line_t(const plane_t &pl1, const plane_t &pl2);
 
         line_t() = default;
 
@@ -70,6 +75,7 @@ namespace geometry {
         plane_t() = default;
         plane_t(const point_t &p, const vector_t &v1, const vector_t &v2);
         plane_t(const point_t &p1, const point_t &p2, const point_t &p3);
+        plane_t(const triangle_t &t1);
 
         void print() const {
             std::cout << "Point: ";
@@ -87,11 +93,32 @@ namespace geometry {
         vector_t get_vector() const;  //need?
         point_t get_point() const;
 
+        line_t intersect(const plane_t &p) const;
+
+    };
+
+    class triangle_t {
+        point_t p1_;
+        point_t p2_;
+        point_t p3_;
+
+    public:
+        triangle_t() = default;
+        triangle_t(point_t &p1, point_t &p2, point_t &p3) : p1_(p1), p2_(p2), p3_(p3) {};
+
+        std::vector<point_t> get_points() const;
     };
 
     vector_t vector_product(const vector_t &v1, const vector_t &v2);
 
+    float dot_product(const vector_t &v1, const vector_t &v2);
+
     bool operator==(const point_t &p1, const point_t &p2);
 
     bool operator==(const vector_t &v1, const vector_t &v2);
+
+
+    bool intersect(const triangle_t &t1, const triangle_t &t2);
+
+    bool intersect_2D(const triangle_t &t1, const triangle_t &t2);
 }
