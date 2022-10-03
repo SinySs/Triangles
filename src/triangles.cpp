@@ -30,6 +30,15 @@ vector_t::vector_t(const point_t &p1, const point_t &p2)
     z_ = coord1[2] - coord2[2];
 }
 
+vector_t::vector_t(const point_t &p1)
+{
+    std::vector<float> coord1 = p1.get_coord();
+    x_ = coord1[0];
+    y_ = coord1[1];
+    z_ = coord1[2];
+
+}
+
 
 bool vector_t::is_equal(const geometry::vector_t &v1) const
 {
@@ -50,6 +59,11 @@ std::vector<float> vector_t::get_coord() const
     return coord;
 }
 
+float vector_t::len() const
+{
+    return sqrt(x_ * x_ + y_ * y_ + z_ * z_);
+}
+
 line_t::line_t(const point_t &p1, const point_t &p2)
 {
     p_ = p1;
@@ -68,7 +82,26 @@ line_t::line_t(const plane_t &pl1, const plane_t &pl2)
     vector_t n2 = pl2.get_normal();
 
     dv_ = vector_product(n1,n2);
-    
+
+    n1 /= n1.len();
+    n2 /= n2.len();
+
+    float n12_dot = dot_product(n1, n2);
+
+    vector_t v1(pl1.get_point());
+    vector_t v2(pl2.get_point());
+
+    float c1 = dot_product(n1, v1);
+    float c2 = dot_product(n2, v2);
+
+    float a = (c2 * n12_dot - c1) / (n12_dot * n12_dot - 1);
+    float b = (c1 * n12_dot - c2) / (n12_dot * n12_dot - 1);
+
+    vector_t tmp(n1 * a + n2 * b);
+
+    std::vector<float> coord = tmp.get_coord();
+
+    p_ = point_t(coord[0], coord[1], coord[2]);
 }
 
 plane_t::plane_t(const point_t &p, const vector_t &v1, const vector_t &v2)
@@ -186,19 +219,91 @@ bool geometry::operator==(const vector_t &v1, const vector_t &v2) {
     return v1.is_equal(v2);
 }
 
+vector_t& vector_t::operator/=(float num)
+{
+    if(std::abs(num) >= fit_tolerance) {
+        x_ = x_ / num;
+        y_ = y_ / num;
+        z_ = z_ / num;
+    }
+
+    return *this;
+}
+
+vector_t& vector_t::operator+=(const vector_t &v1)
+{
+    x_ = x_ + v1.x_;
+    y_ = y_ + v1.y_;
+    z_ = z_ + v1.z_;
+
+    return *this;
+}
+
+vector_t geometry::operator+(const vector_t &v1, const vector_t &v2)
+{
+    vector_t res = v1;
+    res += v2;
+    return res;
+}
+
+float geometry::compute_distanse(const point_t &p, const plane_t &pl)
+{
+    point_t pl_p = pl.get_point();
+    vector_t n = pl.get_normal();
+
+    vector_t diff(p, pl_p);
+
+    float dot = dot_product(diff, n);
+    float n_len = n.len();
+
+    return  dot / n_len;
+
+}
+
+float geometry::plane_to_point(const plane_t &pl, const point_t &p)
+{
+    point_t pl_point = pl.get_point();
+    vector_t dif(p, pl_point);
+
+    vector_t n = pl.get_normal();
+
+    float distance = dot_product(n, dif) / n.len();
+
+    return distance;
+
+}
+
+bool geometry::check_location(const plane_t &pl, const triangle_t &tr) {
+    std::vector<point_t> points1 = tr.get_points();
+
+    float dist1 = plane_to_point(pl, points1[0]);
+    float dist2 = plane_to_point(pl, points1[1]);
+    float dist3 = plane_to_point(pl, points1[2]);
+
+    if ((dist1 < 0 && dist2 < 0 && dist3 < 0) ||
+        (dist1 > 0 && dist2 > 0 && dist3 > 0)) {
+        return false;
+    }
+
+    return true;
+}
+
 bool geometry::intersect(const triangle_t &t1, const triangle_t &t2)
 {
-    plane_t p1(t1);
-    plane_t p2(t2);
+    plane_t pl1(t1);
+    plane_t pl2(t2);
 
-    if(p1.is_equal(p2))
+    if(pl1.is_equal(pl2))
         return intersect_2D(t1, t2);
 
-    if(p1.is_parallel(p2))
+    if(pl1.is_parallel(pl2))
         return false;
 
-    line_t intersection_line(p1, p2);
+    if(check_location(pl1, t2) || check_location(pl2, t1))  //all points on the same side of the plane
+        return false;
 
+
+    line_t intercection(pl1, pl2);
 
     return true;
 }

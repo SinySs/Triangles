@@ -33,6 +33,7 @@ namespace geometry {
         vector_t() = default;
         vector_t(float n) : x_(n), y_(n), z_(n) {};
         vector_t(float x, float y, float z) : x_(x), y_(y), z_(z) {};
+        vector_t(const point_t &p1);
 
         vector_t(const point_t &p1, const point_t &p2);
 
@@ -42,6 +43,15 @@ namespace geometry {
 
         bool is_equal(const vector_t &v1) const;
         std::vector<float> get_coord() const;
+
+        float len() const;
+
+        vector_t& operator/=(float num);
+        vector_t& operator+=(const vector_t &v1);
+
+        vector_t operator*(float num) const {
+            return vector_t(x_ * num, y_ * num, z_ * num);
+        }
 
     };
 
@@ -113,10 +123,17 @@ namespace geometry {
 
     float dot_product(const vector_t &v1, const vector_t &v2);
 
+    float compute_distanse(const point_t &p, const plane_t &pl);
+
     bool operator==(const point_t &p1, const point_t &p2);
 
     bool operator==(const vector_t &v1, const vector_t &v2);
 
+    vector_t operator+(const vector_t &v1, const vector_t &v2);
+
+    float plane_to_point(const plane_t &pl, const point_t &p);
+
+    bool check_location(const plane_t &pl, const triangle_t &tr);
 
     bool intersect(const triangle_t &t1, const triangle_t &t2);
 
