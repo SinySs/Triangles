@@ -10,6 +10,7 @@ namespace geometry {
 
     class triangle_t;
     class plane_t;
+    class line_t;
 
     class point_t {
         float x_ = NAN, y_ = NAN, z_ = NAN;
@@ -17,6 +18,7 @@ namespace geometry {
     public:
         point_t(float x, float y, float z) : x_(x), y_(y), z_(z) {};
         point_t() = default;
+        point_t(const plane_t &pl, const line_t &l);
 
         void print() const {
             std::cout << "(" << x_ << "; " << y_ << "; " << z_ << ")" << std::endl;
@@ -134,6 +136,10 @@ namespace geometry {
     float plane_to_point(const plane_t &pl, const point_t &p);
 
     bool check_location(const plane_t &pl, const triangle_t &tr);
+
+    std::pair<line_t, line_t> triangle_plane_intersect(const triangle_t &tr, const plane_t &pl);
+
+    std::vector<float> compute_params(const line_t &l, const triangle_t &tr1, const triangle_t &tr2);
 
     bool intersect(const triangle_t &t1, const triangle_t &t2);
 
