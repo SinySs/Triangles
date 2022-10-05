@@ -139,7 +139,9 @@ namespace geometry {
 
     std::pair<line_t, line_t> triangle_plane_intersect(const triangle_t &tr, const plane_t &pl);
 
-    std::vector<float> compute_params(const line_t &l, const triangle_t &tr1, const triangle_t &tr2);
+    std::vector<float> compute_intervals(const line_t &l, const triangle_t &tr1, const triangle_t &tr2);
+
+    float  compute_t_param(const point_t &p, const line_t &l);
 
     bool intersect(const triangle_t &t1, const triangle_t &t2);
 

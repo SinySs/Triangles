@@ -271,10 +271,10 @@ vector_t geometry::operator+(const vector_t &v1, const vector_t &v2)
 
 float geometry::compute_distanse(const point_t &p, const plane_t &pl)
 {
-    point_t pl_p = pl.get_point();
+    point_t pl_point = pl.get_point();
     vector_t n = pl.get_normal();
 
-    vector_t diff(p, pl_p);
+    vector_t diff(p, pl_point);
 
     float dot = dot_product(diff, n);
     float n_len = n.len();
@@ -350,34 +350,74 @@ std::pair<line_t, line_t> geometry::triangle_plane_intersect(const triangle_t &t
     return std::make_pair(l1, l2);
 }
 
-std::vector<float> geometry::compute_params(const line_t &l, const triangle_t &tr1, const triangle_t &tr2)
+float geometry::compute_t_param(const point_t &p, const line_t &l)
+{
+    vector_t dv = l.get_vector();
+    point_t l_point = l.get_point();
+    vector_t diff(p, l_point);
+
+    std::vector<float> diff_coord = diff.get_coord();
+    std::vector<float> dv_coord = dv.get_coord();
+
+    float tx = diff_coord[0] / dv_coord[0];
+
+    return tx;
+}
+
+std::vector<float> geometry::compute_intervals(const line_t &l, const triangle_t &tr1, const triangle_t &tr2)
 {
     plane_t pl1(tr1);
     plane_t pl2(tr2);
 
     std::pair<line_t, line_t> lines = triangle_plane_intersect(tr1, pl2);
 
+    point_t intersection_p1(pl1, lines.first);
+    point_t intersection_p2(pl1, lines.second);
+
+    float t00 = compute_t_param(intersection_p1, l);
+    float t01 = compute_t_param(intersection_p2, l);
+
+    lines = triangle_plane_intersect(tr2, pl1);
+
+    intersection_p1 = point_t(pl2, lines.first);
+    intersection_p2 = point_t(pl1, lines.second);
+
+    float t10 = compute_t_param(intersection_p1, l);
+    float t11 = compute_t_param(intersection_p2, l);
+
+    std::vector<float> ret_intervals{t00, t01, t10, t11};
+
+    return ret_intervals;
 
 }
 
-bool geometry::intersect(const triangle_t &t1, const triangle_t &t2)
+bool geometry::intersect(const triangle_t &tr1, const triangle_t &tr2)
 {
-    plane_t pl1(t1);
-    plane_t pl2(t2);
+    plane_t pl1(tr1);
+    plane_t pl2(tr2);
 
     if(pl1.is_equal(pl2))
-        return intersect_2D(t1, t2);
+        return intersect_2D(tr1, tr2);
 
     if(pl1.is_parallel(pl2))
         return false;
 
-    if(check_location(pl1, t2) || check_location(pl2, t1))  //all points on the same side of the plane
+    if(check_location(pl1, tr2) || check_location(pl2, tr1))  //all points on the same side of the plane
         return false;
 
+    line_t intercection_line(pl1, pl2);
+    std::vector<float> t_params = compute_intervals(intercection_line, tr1, tr2);
 
-    line_t intercection(pl1, pl2);
+    float t00 = t_params[0];
+    float t01 = t_params[1];
+    float t10 = t_params[2];
+    float t11 = t_params[3];
+
+    if((std::min(t00, t01) > std::max(t10, t11)) || (std::min(t10,t11) > std::max(t00,t01)))
+        return false;
 
     return true;
+
 }
 
 bool geometry::intersect_2D(const triangle_t &t1, const triangle_t &t2)
