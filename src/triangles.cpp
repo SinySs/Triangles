@@ -147,7 +147,7 @@ plane_t::plane_t(const triangle_t &t1)
 
     p_ = points[0];
     v1_ = vector_t(points[0], points[1]);
-    v1_ = vector_t(points[0], points[2]);
+    v2_ = vector_t(points[0], points[2]);
 
 }
 
@@ -419,8 +419,58 @@ bool geometry::intersect(const triangle_t &tr1, const triangle_t &tr2)
     return true;
 
 }
+point_t project_point(const point_t &p, int n_pl)
+{
+    std::vector<float> coord = p.get_coord();
+    coord[n_pl] = 0;
+
+    return point_t(coord[0], coord[1], coord[2]);
+}
+
+
+triangle_t geometry::project_to_XY(const triangle_t &tr1)
+{
+    plane_t pl(tr1);
+    std::cout << "sdfsf" << '\n';
+
+    vector_t normal = pl.get_normal();
+    normal.print();
+    std::vector<float> coord = normal.get_coord();
+
+    std::vector<point_t> points = tr1.get_points();
+    std::vector<point_t> proj_p;
+
+    if(std::abs(coord[0]) < fit_tolerance && std::abs(coord[2]) < fit_tolerance) { //in OXZ
+        for(int i = 0; i < 3; i++) {
+            point_t new_p = points[i];
+            std::vector<float> coord_new_p = new_p.get_coord();
+            std::swap(coord_new_p[1], coord_new_p[2]); // cange OXZ to OXY
+
+            proj_p.push_back(point_t(coord_new_p[0], coord_new_p[1], coord_new_p[2]));
+        }
+    } else if(coord[2] == 0) { // perpendicular to OXY
+        for(int i = 0; i < 3; i++) {
+            point_t new_p = project_point(points[i], 0);
+            std::vector<float> coord_new_p = new_p.get_coord();
+            std::swap(coord_new_p[0], coord_new_p[2]); // cange OZY to OXY
+
+            proj_p.push_back(point_t(coord_new_p[0], coord_new_p[1], coord_new_p[2]));
+        }
+    } else {
+        for(int i = 0; i < 3; i++) {
+            proj_p.push_back(project_point(points[i], 2));
+        }
+    }
+
+    return triangle_t(proj_p[0], proj_p[1], proj_p[2]);
+
+
+
+
+}
 
 bool geometry::intersect_2D(const triangle_t &t1, const triangle_t &t2)
 {
+    triangle_t projection1 = project_to_XY(t1);
     return true;
 }

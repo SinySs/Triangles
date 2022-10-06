@@ -47,16 +47,15 @@ int main(int argc, char **argv)
 
     }
 
-    plane_t p1(points[0], points[1], points[2]);
-    plane_t p2(points[3], points[4], points[5]);
+    triangle_t t1(points[0], points[1], points[2]);
 
-    vector_t v1 = p1.get_normal();
-    vector_t v2 = p2.get_normal();
+    plane_t pl(t1);
+    pl.print();
 
-    v1.print();
-    v2.print();
-    line_t LINE(p1, p2);
-    LINE.print();
+    triangle_t proj = project_to_XY(t1);
+    std::vector<point_t> p = proj.get_points();
+    for(int i = 0; i < 3; i++)
+        p[i].print();
 
 
     return 0;
