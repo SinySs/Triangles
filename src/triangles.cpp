@@ -465,12 +465,51 @@ triangle_t geometry::project_to_XY(const triangle_t &tr1)
     return triangle_t(proj_p[0], proj_p[1], proj_p[2]);
 
 
-
-
 }
 
-bool geometry::intersect_2D(const triangle_t &t1, const triangle_t &t2)
+void compute_interval(const triangle_t &tr, vector_t D, float& min, float& max)
 {
-    triangle_t projection1 = project_to_XY(t1);
+    std::vector<point_t> points = tr.get_points();
+
+    vector_t V(points[0]);
+    min = max = dot_product(D, V);
+    for (int i = 1; i < 3; i++) {
+        V = vector_t(points[i]);
+        float value = dot_product(D, V);
+        if (value < min)
+            min = value;
+        else if (value > max)
+            max = value;
+    }
+}
+
+
+bool geometry::intersect_2D(const triangle_t &tr1, const triangle_t &tr2)
+{
+    triangle_t projection1 = project_to_XY(tr1);
+    triangle_t projection2 = project_to_XY(tr2);
+
+    std::vector<point_t> points1 = projection1.get_points();
+    std::vector<point_t> points2 = projection2.get_points();
+
+    float min0, max0, min1, max1;
+
+    for (int i0 = 0, i1 = 2; i0 < 3; i1 = i0, i0++) {
+        vector_t D(points1[i0], points1[i1]); // C0.E(i1) = C0.V(i0) - C0.V(i1)
+        compute_interval(tr1, D, min0, max0);
+        compute_interval(tr2, D, min1, max1);
+        if (max1 < min0 || max0 < min1)
+            return false;
+    }
+
+    for (int i0 = 0, i1 = 2; i0 < 3; i1 = i0, i0++) {
+        vector_t D(points2[i0], points2[i1]); // C0.E(i1) = C0.V(i0) - C0.V(i1)
+        compute_interval(tr1, D, min0, max0);
+        compute_interval(tr2, D, min1, max1);
+        if (max1 < min0 || max0 < min1)
+            return false;
+    }
+
+
     return true;
 }
