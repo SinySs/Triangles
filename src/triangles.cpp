@@ -176,7 +176,7 @@ vector_t geometry::vector_product(const vector_t &v1, const vector_t &v2)
 
     float x, y, z;
     x = coord_v1[1] * coord_v2[2] - coord_v1[2] * coord_v2[1];
-    y = coord_v1[2] * coord_v2[0] - coord_v1[0] * coord_v2[3];
+    y = coord_v1[2] * coord_v2[0] - coord_v1[0] * coord_v2[2];
     z = coord_v1[0] * coord_v2[1] - coord_v1[1] * coord_v2[0];
 
     return  vector_t{x, y, z};
@@ -495,7 +495,7 @@ bool geometry::intersect_2D(const triangle_t &tr1, const triangle_t &tr2)
     float min0, max0, min1, max1;
 
     for (int i0 = 0, i1 = 2; i0 < 3; i1 = i0, i0++) {
-        vector_t D(points1[i0], points1[i1]); // C0.E(i1) = C0.V(i0) - C0.V(i1)
+        vector_t D(points1[i0], points1[i1]);
         compute_interval(tr1, D, min0, max0);
         compute_interval(tr2, D, min1, max1);
         if (max1 < min0 || max0 < min1)
@@ -503,13 +503,12 @@ bool geometry::intersect_2D(const triangle_t &tr1, const triangle_t &tr2)
     }
 
     for (int i0 = 0, i1 = 2; i0 < 3; i1 = i0, i0++) {
-        vector_t D(points2[i0], points2[i1]); // C0.E(i1) = C0.V(i0) - C0.V(i1)
+        vector_t D(points2[i0], points2[i1]);
         compute_interval(tr1, D, min0, max0);
         compute_interval(tr2, D, min1, max1);
         if (max1 < min0 || max0 < min1)
             return false;
     }
-
 
     return true;
 }
