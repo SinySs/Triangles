@@ -431,10 +431,8 @@ point_t project_point(const point_t &p, int n_pl)
 triangle_t geometry::project_to_XY(const triangle_t &tr1)
 {
     plane_t pl(tr1);
-    std::cout << "sdfsf" << '\n';
 
     vector_t normal = pl.get_normal();
-    normal.print();
     std::vector<float> coord = normal.get_coord();
 
     std::vector<point_t> points = tr1.get_points();
@@ -482,7 +480,6 @@ void compute_interval(const triangle_t &tr, vector_t D, float& min, float& max)
             max = value;
     }
 }
-
 
 bool geometry::intersect_2D(const triangle_t &tr1, const triangle_t &tr2)
 {
