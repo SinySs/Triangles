@@ -48,12 +48,11 @@ namespace geometry {
 
         float len() const;
 
-        vector_t& operator/=(float num);
-        vector_t& operator+=(const vector_t &v1);
 
-        vector_t operator*(float num) const {
-            return vector_t(x_ * num, y_ * num, z_ * num);
-        }
+        vector_t& operator+=(const vector_t &v1);
+        vector_t& operator/=(float num);
+        vector_t& operator*=(float num);
+
 
     };
 
@@ -102,10 +101,9 @@ namespace geometry {
         bool is_parallel(const plane_t &p) const;
 
         vector_t get_normal() const;
-        vector_t get_vector() const;  //need?
+        vector_t get_vector() const;
         point_t get_point() const;
 
-        line_t intersect(const plane_t &p) const;
 
     };
 
@@ -132,6 +130,10 @@ namespace geometry {
     bool operator==(const vector_t &v1, const vector_t &v2);
 
     vector_t operator+(const vector_t &v1, const vector_t &v2);
+
+    vector_t operator*(const vector_t &v, float num);
+
+    vector_t operator*(float num, const vector_t &v);
 
     float plane_to_point(const plane_t &pl, const point_t &p);
 

@@ -17,6 +17,7 @@ point_t::point_t(const plane_t &pl, const line_t &l)
     float t = (-1) * (dot_product(n, v_l) + d)  / dot_product(n, dv);
 
     vector_t q = dv * t;
+
     std::vector<float> coord = q.get_coord();
 
     x_ = line_point.x_ + coord[0];
@@ -253,6 +254,16 @@ vector_t& vector_t::operator/=(float num)
     return *this;
 }
 
+vector_t& vector_t::operator*=(float num)
+{
+
+    x_ = x_ * num;
+    y_ = y_ * num;
+    z_ = z_ * num;
+
+    return *this;
+}
+
 vector_t& vector_t::operator+=(const vector_t &v1)
 {
     x_ = x_ + v1.x_;
@@ -267,6 +278,17 @@ vector_t geometry::operator+(const vector_t &v1, const vector_t &v2)
     vector_t res = v1;
     res += v2;
     return res;
+}
+vector_t geometry::operator*(const vector_t &v, float num)
+{
+    vector_t res = v;
+    res *= num;
+    return res;
+}
+
+vector_t geometry::operator*(float num, const vector_t &v)
+{
+    return v * num;
 }
 
 float geometry::compute_distanse(const point_t &p, const plane_t &pl)
@@ -354,12 +376,14 @@ float geometry::compute_t_param(const point_t &p, const line_t &l)
 {
     vector_t dv = l.get_vector();
     point_t l_point = l.get_point();
+
     vector_t diff(p, l_point);
 
     std::vector<float> diff_coord = diff.get_coord();
     std::vector<float> dv_coord = dv.get_coord();
 
     float tx = diff_coord[0] / dv_coord[0];
+
 
     return tx;
 }
@@ -371,24 +395,24 @@ std::vector<float> geometry::compute_intervals(const line_t &l, const triangle_t
 
     std::pair<line_t, line_t> lines = triangle_plane_intersect(tr1, pl2);
 
-    point_t intersection_p1(pl1, lines.first);
-    point_t intersection_p2(pl1, lines.second);
+    point_t intersection_p1(pl2, lines.first);
+    point_t intersection_p2(pl2, lines.second);
 
     float t00 = compute_t_param(intersection_p1, l);
     float t01 = compute_t_param(intersection_p2, l);
 
     lines = triangle_plane_intersect(tr2, pl1);
 
-    intersection_p1 = point_t(pl2, lines.first);
+    intersection_p1 = point_t(pl1, lines.first);
     intersection_p2 = point_t(pl1, lines.second);
 
     float t10 = compute_t_param(intersection_p1, l);
     float t11 = compute_t_param(intersection_p2, l);
 
+
     std::vector<float> ret_intervals{t00, t01, t10, t11};
 
     return ret_intervals;
-
 }
 
 bool geometry::intersect(const triangle_t &tr1, const triangle_t &tr2)

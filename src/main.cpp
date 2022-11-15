@@ -18,7 +18,8 @@ int main(int argc, char **argv) {
         for (int j = 0; j < 3; j++) {
             float x = NAN, y = NAN, z = NAN;
             std::cin >> x >> y >> z;
-            assert(std::cin.good());
+            assert(!std::cin.fail());
+           
 
             points.push_back(point_t(x, y, z));
         }
