@@ -7,7 +7,6 @@ using namespace geometry;
 
 int main(int argc, char **argv) {
     int n;
-
     std::cin >> n;
     assert(std::cin.good());
 
@@ -19,14 +18,12 @@ int main(int argc, char **argv) {
             float x = NAN, y = NAN, z = NAN;
             std::cin >> x >> y >> z;
             assert(!std::cin.fail());
-           
 
             points.push_back(point_t(x, y, z));
         }
 
         triangles.push_back(triangle_t(points[0], points[1], points[2]));
         points.clear();
-
     }
 
     for (int i = 0; i < n - 1; i++) {

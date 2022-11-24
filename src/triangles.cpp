@@ -357,16 +357,31 @@ std::pair<line_t, line_t> geometry::triangle_plane_intersect(const triangle_t &t
     }
 
     if(std::abs(dist1) < fit_tolerance) {
-        l1 = line_t(tr_points[0], tr_points[1]);
-        l2 = line_t(tr_points[0], tr_points[2]);
+        if(dist2 * dist3 < 0) {
+            l1 = line_t(tr_points[0], tr_points[1]);
+            l2 = line_t(tr_points[1], tr_points[2]);
+        } else {
+            l1 = line_t(tr_points[0], tr_points[1]);
+            l2 = line_t(tr_points[0], tr_points[2]);
+        }
 
     } else if(std::abs(dist2) < fit_tolerance) {
-        l1 = line_t(tr_points[1], tr_points[0]);
-        l2 = line_t(tr_points[1], tr_points[2]);
+        if(dist1 * dist3 < 0) {
+            l1 = line_t(tr_points[1], tr_points[0]);
+            l2 = line_t(tr_points[0], tr_points[2]);
+        } else {
+            l1 = line_t(tr_points[1], tr_points[0]);
+            l2 = line_t(tr_points[1], tr_points[2]);
+        }
 
     } else if(std::abs(dist3) < fit_tolerance) {
-        l1 = line_t(tr_points[2], tr_points[1]);
-        l2 = line_t(tr_points[2], tr_points[0]);
+        if(dist1 * dist2 < 0) {
+            l1 = line_t(tr_points[1], tr_points[0]);
+            l2 = line_t(tr_points[2], tr_points[1]);
+        } else {
+            l1 = line_t(tr_points[2], tr_points[1]);
+            l2 = line_t(tr_points[2], tr_points[0]);
+        }
     }
 
     return std::make_pair(l1, l2);
