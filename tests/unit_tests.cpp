@@ -147,6 +147,53 @@ TEST(Triangles, triangle_intersection5) {
     ASSERT_TRUE(intersect(t0, t1));
 }
 
+
+TEST(Triangles, triangle_intersection6) {
+    point_t p1(1, 0, 0);
+    point_t p2(0, 1, 0);
+    point_t p3(0, 0, 1);
+
+    point_t p4(0, 0, 0);
+    point_t p5(5, 5, 0);
+    point_t p6(5, 5, 10);
+
+    triangle_t t0(p1, p2, p3);
+    triangle_t t1(p4, p5, p6);
+
+    ASSERT_TRUE(intersect(t0, t1));
+}
+
+TEST(Triangles, triangle_intersection7) {
+    point_t p1(0.5, 0, 0);
+    point_t p2(0, 0, 0);
+    point_t p3(0, 0, 0.5);
+
+    point_t p4(0, 0, 0);
+    point_t p5(5, 5, 0);
+    point_t p6(5, 5, 10);
+
+    triangle_t t0(p1, p2, p3);
+    triangle_t t1(p4, p5, p6);
+
+    ASSERT_TRUE(intersect(t0, t1));
+}
+
+TEST(Triangles, triangle_intersection8) {
+    point_t p1(0.5, 0, 0);
+    point_t p2(0, 0, 0);
+    point_t p3(0, 0, 0.5);
+
+    point_t p4(1, 0, 0);
+    point_t p5(0, 0, 1);
+    point_t p6(0, 1, 0);
+
+    triangle_t t0(p1, p2, p3);
+    triangle_t t1(p4, p5, p6);
+
+    ASSERT_FALSE(intersect(t0, t1));
+}
+
+
 TEST(Triangles, triangle_intersection1_2D) {
     point_t p1(1, 0, 0);
     point_t p2(0, 0, 0);

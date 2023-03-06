@@ -101,7 +101,7 @@ namespace geometry {
         bool is_parallel(const plane_t &p) const;
 
         vector_t get_normal() const;
-        vector_t get_vector() const;
+        vector_t get_vector() const;  //need?
         point_t get_point() const;
 
 
